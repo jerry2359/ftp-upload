@@ -113,17 +113,14 @@ module.exports = function (opts) {
     // 获取远程目录
     // 如：/test/first/2019-02-24/526352
     let random = Math.ceil(Math.random()*1000000)
-    let remoteDestPath = `${opts.remotePath}/${getNowFormatDate()}`
-    inquirer.prompt([
-      {
-        type: 'input',
-        message: `Remote directory ${remoteDestPath}/${chalk.gray.bold(random)}:`,
-        name: 'directory',
-        default: random
-      }
-    ]).then(answers => {
+    let formatDate = getNowFormatDate()
+    // 处理remotePath，替换[date]
+    let remoteDestPath = opts.remotePath.replace('[date]', formatDate)
+    const handleRemote = (answers) => {
       // 拼凑目录路径
-      remoteDestPath += '/' + answers.directory
+      if (answers) {
+        remoteDestPath = remoteDestPath.replace('[random]', answers.directory)
+      }
       // 开始上传文件
       console.log('')
       uploadFiles(remoteDestPath).then(() => {
@@ -135,7 +132,21 @@ module.exports = function (opts) {
         ))
         c.end()
       })
-    })
+    }
+
+    if (remoteDestPath.indexOf('[random]') >= 0) {
+      inquirer.prompt([
+        {
+          type: 'input',
+          message: `Remote directory ${remoteDestPath.replace('[random]', '')}${chalk.gray.bold(random)}:`,
+          name: 'directory',
+          default: random
+        }
+      ]).then(handleRemote)
+    } else {
+      handleRemote()
+    }
+
   });
 
   // 连接远程
