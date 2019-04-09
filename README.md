@@ -21,6 +21,8 @@ ftpUpload({
   //    当字符串中有[random]时，会询问是否手动输入一个值替换随机数
   //    如：'/test/[date]' 或 '/test/[date]/[random]'
   remotePath: '/test/first',
+  // 支持同时上传多个文件，建议2~3个
+  threads: 3,
   // 指定一个本地目录
   // 这里必须是一个绝对路径
   localPath: path.resolve(__dirname, 'dist'),
@@ -28,6 +30,10 @@ ftpUpload({
   host: '36.120.77.38',
   port: 21,
   user: 'Your user name',
-  password: 'Your password'
+  password: 'Your password',
+  // 上传完成的回调
+  /*success: function (res) {
+    console.log(res)
+  }*/
 })
 ```
