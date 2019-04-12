@@ -1,6 +1,6 @@
 {
   "name": "ftp-upload",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "使用nodejs ftp模块上传多个文件",
   "main": "index.js",
   "scripts": {

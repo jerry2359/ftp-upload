@@ -8,8 +8,9 @@ npm i -D ftp-upload
 ## 使用方法
 ```js
 const path = require('path')
-const ftpUpload = require('ftp-upload')
-ftpUpload({
+const FtpUpload = require('ftp-upload')
+
+const ftpUpload = new FtpUpload({
   // 指定一个远程域名，生成测试连接时会用到
   remoteDomain: 'http://www.test.com',
   // 指定一个远程目录
@@ -35,5 +36,20 @@ ftpUpload({
   /*success: function (res) {
     console.log(res)
   }*/
+})
+
+// 初始化准备工作
+ftpUpload.init().on('ready', function (res) {
+  // 处理一些逻辑...
+  // ...
+  setTimeout(() => {
+    // 开始上传文件
+    this.start(res.remoteDestPath)
+  }, 3000)
+})
+
+// 文件上传成功
+ftpUpload.on('success', function (res) {
+  console.log(res)
 })
 ```
