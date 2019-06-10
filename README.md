@@ -22,6 +22,8 @@ const ftpUpload = new FtpUpload({
   //    当字符串中有[random]时，会询问是否手动输入一个值替换随机数
   //    如：'/test/[date]' 或 '/test/[date]/[random]'
   remotePath: '/test/first',
+  // autoRemotePath: true, // 跳过询问远程目录，默认false
+  // autoOverwirte: true, // 跳过询问覆盖已有目录，默认false
   // 支持同时上传多个文件，建议2~3个
   threads: 3,
   // 指定一个本地目录
