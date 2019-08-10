@@ -4,7 +4,11 @@ const chalk = require('chalk')
 
 class FtpUpload {
   constructor(opts) {
-    this.opts = opts
+    // 一些参数默认设置
+    const defs = {
+      clearRemote: true // 是否清楚远程目录和文件，默认true
+    }
+    this.opts = Object.assign(defs, opts)
     this.eventList = {}
   }
 
