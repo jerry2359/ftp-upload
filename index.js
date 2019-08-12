@@ -6,7 +6,22 @@ class FtpUpload {
   constructor(opts) {
     // 一些参数默认设置
     const defs = {
-      clearRemote: true // 是否清楚远程目录和文件，默认true
+      // 默认上传方式：遇到文件名称一样的文件是替换还是跳过。值有"skip" 或 "overwrite"，默认"overwrite"
+      uploadType: 'overwrite',
+      // 根据匹配规则，执行对应上传方式
+      // 注：根据规则匹配到的文件将无视默认上传方式；一个上传文件只会对应一个匹配规则，多个匹配规则时取第一个
+      rules: [
+        /*{
+          test: /\.html?$/,
+          use: 'overwrite'
+        },
+        {
+          test: /\.(eot|svg|ttf|woff2?)$/,
+          use: 'overwrite'
+        }*/
+      ],
+      // 本地目录的glob选择器
+      glob: '**/*.*'
     }
     this.opts = Object.assign(defs, opts)
     this.eventList = {}
@@ -91,44 +106,18 @@ class FtpUpload {
   }
 }
 
-module.exports = FtpUpload
-
-/*
-module.exports = function (opts) {
-  // 实例化多个client
-  const clients = client.createClients(opts.threads)
-
-  // 验证参数数据格式
-  // remotePath必须以 / 开头
-  if (opts.remotePath.substr(0, 1) !== '/') {
-    throw `The argument remotePath must start with /`
-  }
-
-  // 如果remotePath是 / 则替换为空
-  // 这里是为了最终拼凑域名连接用
-  if (opts.remotePath === '/') {
-    opts.remotePath = ''
-  }
-
-  let isInit = []
-  const spinner = ora('Start connect ftp...')
-  spinner.start()
-  clients.forEach(c => {
-    c.on('ready', function() {
-      isInit.push(true)
-      if (isInit.length !== opts.threads) return
-      spinner.stop()
-      console.log('Ftp connect success!')
-      client.ready(opts)
-    })
-
-    // 连接远程
-    c.connect({
-      host: opts.host,
-      port: opts.port,
-      user: opts.user,
-      password: opts.password
-    })
+// 当有多个ftp上传任务时，使用该方法可让ftp逐一执行任务
+const ftpRunSequence = (sequences, callBack) => {
+  const ftpUpload = sequences.shift()
+  ftpUpload.on('success', () => {
+    if (sequences.length) {
+      ftpRunSequence(sequences, callBack)
+    }
   })
+  callBack && callBack(ftpUpload)
 }
-*/
+
+module.exports = {
+  FtpUpload,
+  ftpRunSequence
+}
